@@ -6,11 +6,13 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
     public MidiInputReceiver(ScaleSession session){
         this.session = session;
     }
+
     @Override
     public void send(MidiMessage message, long timeStamp) {
         if(!(message instanceof ShortMessage)){
             return;
         }
+
         // A ShortMessage contains a MIDI event where getCommand() tells you what happened,
         // getData1() tells you which note, and getData2() tells you how strongly it was pressed.
         ShortMessage sm = (ShortMessage) message;

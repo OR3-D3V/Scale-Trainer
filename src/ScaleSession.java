@@ -98,8 +98,9 @@ public class ScaleSession{
         return completedSession;
     }
 
+    //Close The Devices and The Transmitter
     private void onCompletion(){
-        midiKeyboardConnection.closeTransmitter();
-        currentMidiDevice.close();
+        midiKeyboardConnection.closeTransmitter(); // Close Transmitter
+        currentMidiDevice.close(); // Closes the Midi Device
     }
 }
