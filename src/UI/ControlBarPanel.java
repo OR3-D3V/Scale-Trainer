@@ -1,13 +1,14 @@
 package UI;
 
+import UI.TempoComp.AscendButton;
+import UI.TempoComp.DescendButton;
+import UI.TempoComp.TempoSlider;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.jar.JarEntry;
 
 public class ControlBarPanel extends JPanel implements ActionListener {
     // You have to pass in reference data types to the ComboBox e.g(String). Primitive types would not work (int, double).
@@ -46,12 +47,28 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         typePanel.add(typeText);
         typePanel.add(modeDropDown);
 
+        //Tempo Slider
+        JPanel tempoSliderPanel = new JPanel(new FlowLayout());
+        JLabel tempoText = new JLabel("Tempo");
+        TempoSlider tempoSlider = new TempoSlider();
+        tempoSliderPanel.add(tempoText);
+        tempoSliderPanel.add(tempoSlider);
+        tempoSliderPanel.add(tempoSlider.getTempoValue());
+
+
+        //Ascend Button
+        AscendButton ascendButton = new AscendButton();
+
+        //Descend Button
+        DescendButton descendButton = new DescendButton();
         //Add all components to the panel
         this.add(scale);
         this.add(typePanel);
+        this.add(tempoSliderPanel);
+        this.add(tempoSlider.getTempoValue());
+        this.add(ascendButton);
+        this.add(descendButton);
         this.setVisible(true);
-
-
     }
 
     @Override

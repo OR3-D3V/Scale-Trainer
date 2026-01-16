@@ -1,5 +1,4 @@
 package UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,12 +7,11 @@ import java.security.PublicKey;
 
 public class MainFrame extends JFrame implements ActionListener {
     public MainFrame(){
-//        this.pack();
         this.setTitle("Scale Trainer App");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
-        this.setSize(500, 500);
+        this.setSize(800, 500);
         this.add(new ControlBarPanel(), BorderLayout.NORTH);
         this.setVisible(true);
     }

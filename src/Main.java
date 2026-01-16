@@ -32,7 +32,7 @@ public class Main{
         String interval = scanner.nextLine();
         scaleSession.generateMajorScale(key, interval);
 
-//      The receiver is made by me. It gets a midi message and a time stamp, everytime i click on a key.
+//      The receiver is made by me. It gets a midi message and a time stamp, everytime I click on a key.
 //        You have to tell the transmitter from the device to use the receiver you used. It will automatically know what to do.
         midiKeyboardConnection.setReceiver(inputReceiver);
 
