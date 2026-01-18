@@ -2,6 +2,7 @@ package UI;
 
 import UI.TempoComp.AscendButton;
 import UI.TempoComp.DescendButton;
+import UI.TempoComp.StartButton;
 import UI.TempoComp.TempoSlider;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -61,6 +62,10 @@ public class ControlBarPanel extends JPanel implements ActionListener {
 
         //Descend Button
         DescendButton descendButton = new DescendButton();
+
+        //Start Button
+
+
         //Add all components to the panel
         this.add(scale);
         this.add(typePanel);
@@ -68,7 +73,9 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         this.add(tempoSlider.getTempoValue());
         this.add(ascendButton);
         this.add(descendButton);
+        this.add(new StartButton());
         this.setVisible(true);
+
     }
 
     @Override
