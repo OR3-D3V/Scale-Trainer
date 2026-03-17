@@ -1,4 +1,6 @@
 package UI;
+import UI.KeyboardUI.KeyboardPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,7 +15,13 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setBackground(Color.BLACK);
         this.setSize(1000, 500);
         this.add(new ControlBarPanel(), BorderLayout.NORTH);
+        KeyboardPanel keyboardPanel = new KeyboardPanel(this.getHeight());
+
+        this.add(keyboardPanel, BorderLayout.SOUTH);
+
         this.setVisible(true);
+        keyboardPanel.generateWhiteKeyLayout();
+        keyboardPanel.generateBlackKeyLayout();
     }
 
     @Override
