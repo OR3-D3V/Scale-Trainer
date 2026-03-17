@@ -25,7 +25,9 @@ public class Main{
         midiKeyboardConnection.setTransmitter(currentMidiDevice.getTransmitter());
 
 
-//      Ask user to choose a scale and the key.
+        /**
+         *  Ask user to choose a scale and the key.
+         */
         System.out.println("Enter a Key");
         String key = scanner.nextLine();
         System.out.println("Enter the Interval (Minor / Major)");

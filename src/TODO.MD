@@ -8,7 +8,7 @@
 * [x] Generate black keys
 * [x] Fix positioning and layering
 * [x] Add borders/styling for keys
-* [ ] Support multiple octaves (dynamic generation)
+* [x] Support multiple octaves (dynamic generation)
 * [ ] Resize keyboard based on window size (optional)
 
 ---

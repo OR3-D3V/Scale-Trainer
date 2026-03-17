@@ -13,7 +13,8 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
-        this.setSize(1000, 500);
+        this.setSize(1160, 500);
+        setResizable(false);
         this.add(new ControlBarPanel(), BorderLayout.NORTH);
         KeyboardPanel keyboardPanel = new KeyboardPanel(this.getHeight());
 
