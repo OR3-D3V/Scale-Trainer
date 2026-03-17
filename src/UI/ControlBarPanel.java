@@ -27,11 +27,13 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         //Scale Panel
         JPanel scale = new JPanel(new FlowLayout());
         scale.setVisible(true);
+
             //Label
         JLabel label = new JLabel("Key/Scale: ");
             //Combobox
         dropDown = new JComboBox(musicalNotes);
         dropDown.addActionListener(this); // You have to add a listener for it to work.
+
             //Add all
         scale.add(label);
         scale.add(dropDown);
