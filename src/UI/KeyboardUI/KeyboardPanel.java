@@ -30,7 +30,7 @@ public class KeyboardPanel extends JPanel {
 
     public void generateBlackKeyLayout(){
         for(int i =0; i < 27; i++){
-            if(i != 2 && i != 6 && i != 9 && i != 13 && i != 16 && i != 20 && i != 23 ){
+            if(i != 2 && i != 6 && i != 9 && i != 13 && i != 16 && i != 20 && i != 23){
                 BlackKey currBlack = new BlackKey();
 
                 int leftWhiteX = whitePositions.get(i);

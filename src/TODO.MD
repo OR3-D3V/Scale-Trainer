@@ -9,7 +9,7 @@
 * [x] Fix positioning and layering
 * [x] Add borders/styling for keys
 * [x] Support multiple octaves (dynamic generation)
-* [ ] Resize keyboard based on window size (optional)
+* [x] Resize keyboard based on window size (optional)
 
 ---
 

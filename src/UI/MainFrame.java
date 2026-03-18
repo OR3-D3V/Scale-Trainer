@@ -16,17 +16,21 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setSize(1160, 500);
         setResizable(false);
         this.add(new ControlBarPanel(), BorderLayout.NORTH);
+
+        // Piano Section
         KeyboardPanel keyboardPanel = new KeyboardPanel(this.getHeight());
-
-        this.add(keyboardPanel, BorderLayout.SOUTH);
-
-        this.setVisible(true);
+        add(keyboardPanel, BorderLayout.SOUTH);
+        setVisible(true);
         keyboardPanel.generateWhiteKeyLayout();
         keyboardPanel.generateBlackKeyLayout();
+
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
     }
+
+
 }

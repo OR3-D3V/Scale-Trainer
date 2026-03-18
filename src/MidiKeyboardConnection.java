@@ -3,58 +3,116 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-/*
 
-    The MidiSystem is a room, it tell's you what devices exist in the program.
-    It is Static, and it only opens the device, lists the device and also attach a receiver
-
-    The MidiDevice is the device itself, it has details on the midi device
-
-    In hierarchy the Midi System comes first, then the Midi Device.
+/**
+ * Manages interactive MIDI input device selection and message routing.
+ * <p>
+ * This class works with Java Sound MIDI APIs in two stages:
+ * first selecting a {@link MidiDevice} that can produce outgoing MIDI messages
+ * through a {@link Transmitter}, then wiring that transmitter to an application
+ * {@link Receiver} implementation.
+ * <p>
+ * Typical flow:
+ * <ol>
+ *   <li>Call {@link #getDevices()} to choose an available MIDI input device.</li>
+ *   <li>Obtain the device transmitter externally and call {@link #setTransmitter(Transmitter)}.</li>
+ *   <li>Provide the target receiver via {@link #setReceiver(Receiver)}.</li>
+ *   <li>Call {@link #closeTransmitter()} during shutdown.</li>
+ * </ol>
  */
 public class MidiKeyboardConnection {
+    /**
+     * Shared console scanner used to read numeric device selections from standard input.
+     */
     private static Scanner inp = new Scanner(System.in);
+
+    /**
+     * Current transmitter obtained from the selected MIDI device.
+     */
     private Transmitter transmitter;
+
+    /**
+     * Receiver currently attached to the configured transmitter.
+     */
     private Receiver receiver;
 
-    //This Methods Gets All The Devices And Allows The User To Select A Midi Device.
+    /**
+     * Lists all MIDI devices that can provide a transmitter, then blocks until the user
+     * selects one from the console.
+     * <p>
+     * The method repeatedly prompts until a numeric selection is entered and the selected
+     * device can be acquired from {@link MidiSystem}. Devices with no transmitter support
+     * are excluded from the displayed list.
+     *
+     * <p><b>Example: interactive device selection</b></p>
+     * <pre>{@code
+     * MidiKeyboardConnection connection = new MidiKeyboardConnection();
+     * MidiDevice device = MidiKeyboardConnection.getDevices();
+     * device.open();
+     * }</pre>
+     *
+     * <p><b>Example: full wiring flow</b></p>
+     * <pre>{@code
+     * MidiKeyboardConnection connection = new MidiKeyboardConnection();
+     * MidiDevice device = MidiKeyboardConnection.getDevices();
+     * device.open();
+     *
+     * connection.setTransmitter(device.getTransmitter());
+     * connection.setReceiver(new MidiInputReceiver(scaleSession));
+     * }</pre>
+     *
+     * @return the selected {@link MidiDevice} instance
+     * @throws MidiUnavailableException if device information cannot be queried before
+     *                                  interactive selection starts
+     * @implNote Input range validation compares against the total number of discovered
+     * devices, while selection is performed against the filtered list of transmitter-capable
+     * devices.
+     */
     public static MidiDevice getDevices() throws MidiUnavailableException {
+        // devices is all the information of all the MidiDevices
+        // Midisytem.getMidiDeviceInfo returns an array of all MidiDevice Information
         MidiDevice.Info[] devices = MidiSystem.getMidiDeviceInfo();
+
+        // Only devices that can transmit MIDI input are selectable by the user.
         ArrayList<MidiDevice> availableDevices = new ArrayList<>();
+
         //        System.out.println(Arrays.toString(devices));
 
-        // Fix the method loop that gets the devices.
-        // This should now get only devices with transmitters.
+        // Print a user-facing numbered list of transmitter-capable devices.
         System.out.println("Select Your Midi Device");
         int counter = 1;
         for(int i = 0; i < devices.length; i++){
+            //Get's a midi device that is returned when we pass the information of the device
             MidiDevice currentDevice = MidiSystem.getMidiDevice(devices[i]);
+
+            // Only add the device to the availableDevices if it has more than one transmitter
             if(currentDevice.getMaxTransmitters() != 0){
                 System.out.println(counter + " Device Name: " + devices[i].getName());
                 counter++;
                 availableDevices.add(currentDevice);
             }
         }
-            // Get User Input
+
+            // Read and validate selection until a usable device is returned.
         while (true) {
             System.out.print("Select The Device");
-            // 1) Validate it's a number BEFORE reading it
+            // Ensure the next token is numeric before calling nextInt().
             if (!inp.hasNextInt()) {
                 System.out.println("Input is not a number.");
-                inp.next(); // consume the bad token so we don't get stuck
+                inp.next(); // consume the invalid token to avoid an infinite prompt loop
                 continue;
             }
 
-            // 2) Now it's safe to read
+            // Convert the user's 1-based menu input into an integer selection.
             int deviceToSelect = inp.nextInt();
 
-            // 3) Validate range BEFORE indexing
+            // Reject values outside the menu range before accessing the device list.
             if (deviceToSelect < 1 || deviceToSelect > devices.length) {
                 System.out.println("Input is out of range.");
                 continue;
             }
 
-            // 4) Try to obtain the actual MidiDevice
+            // Retrieve the chosen device from the filtered list and return it if available.
             try {
                 MidiDevice device = MidiSystem.getMidiDevice(availableDevices.get(deviceToSelect-1).getDeviceInfo());
                 System.out.println("Selected: " + availableDevices.get(deviceToSelect-1).getDeviceInfo() + " Transmitters: " + device.getMaxTransmitters());
@@ -65,13 +123,33 @@ public class MidiKeyboardConnection {
         }
 
     }
+
+    /**
+     * Stores the transmitter that will later forward messages to a receiver.
+     *
+     * @param transmitter transmitter retrieved from the chosen MIDI device
+     */
     public void setTransmitter(Transmitter transmitter){
         this.transmitter = transmitter;
     }
+
+    /**
+     * Stores the receiver and immediately wires it to the currently configured transmitter.
+     * <p>
+     * This method assumes {@link #setTransmitter(Transmitter)} has already been called.
+     *
+     * @param receiver receiver that should consume incoming MIDI messages
+     */
     public void setReceiver(Receiver receiver){
         this.receiver = receiver;
         transmitter.setReceiver(receiver);
     }
+
+    /**
+     * Closes the currently stored transmitter.
+     * <p>
+     * Call this when MIDI input routing is no longer needed to release transmitter resources.
+     */
     public void closeTransmitter(){
         this.transmitter.close();
     }
