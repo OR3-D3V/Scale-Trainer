@@ -3,7 +3,7 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class WhiteKey extends JPanel{
+public class WhiteKey extends JPanel implements Key{
     private final int height = 100;
     private final int width = 40;
     public WhiteKey(){

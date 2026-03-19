@@ -62,7 +62,10 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
                 close();
             }
             else{
-                this.session.getInputFromReceiverAndCheckNextNote(noteNumber);
+                session.sendPressedNote(noteNumber);
+
+                // Enable this for CLI
+//                this.session.getInputFromReceiverAndCheckNextNote(noteNumber);
             }
 
             //Use This For Debugging If The Class Does Not Work Well.
@@ -72,6 +75,10 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
 //                            " | Channel: " + channel
 //            );
 
+        }
+        // If the note is note being pressed set the key color to its default
+        else if(sm.getCommand() == ShortMessage.NOTE_OFF && sm.getData2() == 0){
+            session.sendReleasedNote(sm.getData1());
         }
     }
 

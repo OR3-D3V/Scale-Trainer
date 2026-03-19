@@ -1,3 +1,4 @@
+import UI.MainFrame;
 import com.sun.source.tree.IfTree;
 
 import javax.sound.midi.MidiDevice;
@@ -14,6 +15,8 @@ import java.util.Map;
  * session is completed, associated MIDI resources are closed.
  */
 public class ScaleSession{
+    // Frame
+    MainFrame frame = new MainFrame();
     /**
      * Target scale represented as note names, later replaced position-by-position
      * with status markers ("✅" or "❌") as the user plays.
@@ -133,30 +136,30 @@ public class ScaleSession{
      *
      * @param noteAsNumber MIDI note number received from the input callback
      */
-    public void getInputFromReceiverAndCheckNextNote(int noteAsNumber){
-        String [] generatedScaleAsNoteTemp = getGeneratedScaleAsNotes();
-        String note = NoteUtil.getNoteBasedOnNumber(noteAsNumber);
-//        System.out.println(note);
-
-        for(int i = 0; i < generatedScaleAsNoteTemp.length; i++){
-            if(!generatedScaleAsNoteTemp[i].equalsIgnoreCase("✅") & !generatedScaleAsNoteTemp[i].equalsIgnoreCase("❌")){
-                if(generatedScaleAsNoteTemp[i].equalsIgnoreCase(note)){
-                    generatedScaleAsNoteTemp[i] = "✅";
-                    System.out.println(Arrays.toString(generatedScaleAsNoteTemp));
-                    break;
-                }
-                else {
-                    generatedScaleAsNoteTemp[i] = "❌";
-                    System.out.println(Arrays.toString(generatedScaleAsNoteTemp));
-                    break;
-                }
-            }
-            else if(i == 7) {
-                completedSession = true;
-                onCompletion();
-            }
-        }
-    }
+//    public void getInputFromReceiverAndCheckNextNote(int noteAsNumber){
+//        String [] generatedScaleAsNoteTemp = getGeneratedScaleAsNotes();
+//        String note = NoteUtil.getNoteBasedOnNumber(noteAsNumber);
+////        System.out.println(note);
+//
+//        for(int i = 0; i < generatedScaleAsNoteTemp.length; i++){
+//            if(!generatedScaleAsNoteTemp[i].equalsIgnoreCase("✅") & !generatedScaleAsNoteTemp[i].equalsIgnoreCase("❌")){
+//                if(generatedScaleAsNoteTemp[i].equalsIgnoreCase(note)){
+//                    generatedScaleAsNoteTemp[i] = "✅";
+//                    System.out.println(Arrays.toString(generatedScaleAsNoteTemp));
+//                    break;
+//                }
+//                else {
+//                    generatedScaleAsNoteTemp[i] = "❌";
+//                    System.out.println(Arrays.toString(generatedScaleAsNoteTemp));
+//                    break;
+//                }
+//            }
+//            else if(i == 7) {
+//                completedSession = true;
+//                onCompletion();
+//            }
+//        }
+//    }
 
     /**
      * Returns the mutable session state array containing pending notes and
@@ -183,5 +186,13 @@ public class ScaleSession{
     private void onCompletion(){
         midiKeyboardConnection.closeTransmitter(); // Close Transmitter
         currentMidiDevice.close(); // Closes the Midi Device
+    }
+
+    public void sendPressedNote(int note){
+        frame.getKeyboardPanel().pressKey(note);
+    }
+
+    public void sendReleasedNote(int note){
+        frame.getKeyboardPanel().releaseKey(note);
     }
 }

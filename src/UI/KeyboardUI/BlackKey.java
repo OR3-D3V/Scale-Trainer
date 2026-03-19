@@ -3,7 +3,7 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class BlackKey extends JPanel {
+public class BlackKey extends JPanel implements Key{
     private int width = 20;
     private int height = 60;
     private Color color = Color.BLACK;
