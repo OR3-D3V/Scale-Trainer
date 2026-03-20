@@ -8,18 +8,23 @@ import java.awt.event.ActionListener;
 import java.security.PublicKey;
 
 public class MainFrame extends JFrame implements ActionListener {
+    private KeyboardPanel keyboardPanel;
+    private ControlBarPanel controlBarPanel;
     public MainFrame(){
         this.setTitle("Scale Trainer App");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
-        this.setSize(1000, 500);
-        this.add(new ControlBarPanel(), BorderLayout.NORTH);
-        KeyboardPanel keyboardPanel = new KeyboardPanel(this.getHeight());
+        this.setSize(1160, 500);
+        setResizable(false);
+        controlBarPanel = new ControlBarPanel();
 
-        this.add(keyboardPanel, BorderLayout.SOUTH);
+        this.add(controlBarPanel, BorderLayout.NORTH);
 
-        this.setVisible(true);
+        // Piano Section
+        keyboardPanel = new KeyboardPanel(this.getHeight());
+        add(keyboardPanel, BorderLayout.SOUTH);
+        setVisible(true);
         keyboardPanel.generateWhiteKeyLayout();
         keyboardPanel.generateBlackKeyLayout();
     }
@@ -28,4 +33,11 @@ public class MainFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
+
+    public KeyboardPanel getKeyboardPanel(){
+
+        return keyboardPanel;
+    }
+
+
 }

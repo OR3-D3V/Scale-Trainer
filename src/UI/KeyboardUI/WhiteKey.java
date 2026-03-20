@@ -3,7 +3,7 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class WhiteKey extends JPanel{
+public class WhiteKey extends JPanel implements Key{
     private final int height = 100;
     private final int width = 40;
     public WhiteKey(){
@@ -15,7 +15,8 @@ public class WhiteKey extends JPanel{
     }
 
     public void pressed(){
-        this.setBackground(Color.green);
+        System.out.println("Got here");
+        setBackground(Color.green);
     }
 
     public void released(){

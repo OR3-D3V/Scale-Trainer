@@ -8,14 +8,14 @@
 * [x] Generate black keys
 * [x] Fix positioning and layering
 * [x] Add borders/styling for keys
-* [ ] Support multiple octaves (dynamic generation)
-* [ ] Resize keyboard based on window size (optional)
+* [x] Support multiple octaves (dynamic generation)
+* [x] Resize keyboard based on window size (optional)
 
 ---
 
 ### 2. Key Data Mapping
 
-* [ ] Assign a MIDI note number to each key
+* [X] Assign a MIDI note number to each key
 * [ ] Store keys in a structure (e.g., Map<note, KeyPanel>)
 * [ ] Create methods:
 

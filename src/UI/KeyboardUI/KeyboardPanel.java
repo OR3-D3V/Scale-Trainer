@@ -3,63 +3,117 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class KeyboardPanel extends JPanel {
-    ArrayList<Integer> whitePositions = new ArrayList<>();
-
+    private ArrayList<Integer> whitePositions = new ArrayList<>();
+    private HashMap<Integer, Key> keys = new HashMap<>();
     public KeyboardPanel(int height){
         this.setPreferredSize(new Dimension(900, height/3));
         this.setLayout(null);
         this.setBackground(new Color(23, 177, 228));
-
-//        for(int i = 0; i <= 12; i++){
-//            if(i == 1 || i == 3 || i == 6 || i == 8 || i == 10){
-//                BlackKey currBlack = new BlackKey();
-//                currBlack.setBounds(xBlack, 0, currBlack.getWidth(), currBlack.getHeight());
-//                add(currBlack);
-//                setComponentZOrder(currBlack, 0);
-//                xBlack = xWhite - 40 - (currBlack.getWidth() / 2);
-//            }
-//            else{
-//                WhiteKey currWhite = new WhiteKey();
-//                currWhite.setBounds(xWhite, 0, currWhite.getWidth(), currWhite.getHeight());
-//                xWhite+= currWhite.getWidth();
-//                add(currWhite);
-//            }
-//        }
-
     }
 
     /**
      * params: none
      * generates the piano layout
      */
-
     public void generateWhiteKeyLayout(){
+        int currNote = 48;
         int x = 0;
-        for(int i =0; i < 7; i++){
+        for(int i =0; i < 29; i++){
+
+            // If the current key is black, increase currNote to change the current Note
+            while (isBlack(currNote)){
+                currNote++;
+            }
+
             WhiteKey curr = new WhiteKey();
             curr.setBounds(x, 0, 40, 90);
+
+            keys.put(currNote, curr);
+            currNote++; // Increment currNote
             add(curr);
             whitePositions.add(x);
             x += curr.getWidth();
         }
     }
 
-    public void generateBlackKeyLayout(){
-        for(int i =0; i < 7; i++){
-            if(i != 2 && i !=6){
-                BlackKey currBlack = new BlackKey();
+    public void generateBlackKeyLayout() {
 
-                int leftWhiteX = whitePositions.get(i);
-                int blackX = leftWhiteX+ 40 - (currBlack.getWidth() /2);
+        int currNote = 48;
+        int whiteIndex = 0;
 
-                currBlack.setBounds(blackX, 0, currBlack.getWidth(), currBlack.getHeight());
-                add(currBlack);
-                setComponentZOrder(currBlack, 0);
+        while (whiteIndex < whitePositions.size()) {
+
+            if (isBlack(currNote)) {
+
+                // make sure we don't go out of bounds
+                if (whiteIndex - 1 >= 0 && whiteIndex - 1 < whitePositions.size()) {
+
+                    BlackKey currBlack = new BlackKey();
+
+                    // Get previous white key
+                    int leftWhiteX = whitePositions.get(whiteIndex - 1);
+                    // set up the black keys x pozition
+                    int blackX = leftWhiteX + 40 - (20 / 2);
+
+                    currBlack.setBounds(blackX, 0, 20, 60);
+
+                    keys.put(currNote, currBlack); // Add it to the map
+
+                    add(currBlack);
+                    setComponentZOrder(currBlack, 0);
+                }
+
+            } else {
+                whiteIndex++;
             }
+
+            currNote++;
         }
+
         revalidate();
         repaint();
+    }
+
+    public boolean isBlack(int note) {
+        int n = note % 12;
+        return n == 1 || n == 3 || n == 6 || n == 8 || n == 10;
+    }
+
+    public HashMap<Integer, Key> getKeys(){
+        return keys;
+    }
+
+
+    public void pressKey(int note){
+        if(keys.containsKey(note)){
+            if(isBlack(note)){
+                BlackKey curr = (BlackKey) keys.get(note);
+                curr.pressed();
+            }
+            else {
+                WhiteKey curr = (WhiteKey) keys.get(note);
+                curr.pressed();
+            }
+        }
+        else {
+            System.out.println(note);
+            System.out.println("Key not found / Mapped Properly");
+        }
+    }
+
+    public void releaseKey(int note){
+        if(keys.containsKey(note)){
+            if(isBlack(note)){
+                BlackKey curr = (BlackKey) keys.get(note);
+                curr.released();
+            }
+            else {
+                WhiteKey curr = (WhiteKey) keys.get(note);
+                curr.released();
+            }
+        }
     }
 }

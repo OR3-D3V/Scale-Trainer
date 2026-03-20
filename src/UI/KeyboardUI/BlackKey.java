@@ -3,12 +3,15 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class BlackKey extends JPanel {
+public class BlackKey extends JPanel implements Key{
     private int width = 20;
     private int height = 60;
     private Color color = Color.BLACK;
+    private Color borderColor = Color.red;
+    private int borderThickness = 2;
     public BlackKey(){
         this.setPreferredSize(new Dimension(width, height));
+        setBorder(BorderFactory.createLineBorder(borderColor, borderThickness));
         setBackground(color);
         setVisible(true);
     }
