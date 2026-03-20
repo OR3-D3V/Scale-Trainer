@@ -15,7 +15,8 @@ public class WhiteKey extends JPanel implements Key{
     }
 
     public void pressed(){
-        this.setBackground(Color.green);
+        System.out.println("Got here");
+        setBackground(Color.green);
     }
 
     public void released(){

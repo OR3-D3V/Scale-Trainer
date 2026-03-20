@@ -23,7 +23,7 @@ public class KeyboardPanel extends JPanel {
         int x = 0;
         for(int i =0; i < 29; i++){
 
-            // If the is black, go to the next one.
+            // If the current key is black, increase currNote to change the current Note
             while (isBlack(currNote)){
                 currNote++;
             }
@@ -32,7 +32,7 @@ public class KeyboardPanel extends JPanel {
             curr.setBounds(x, 0, 40, 90);
 
             keys.put(currNote, curr);
-
+            currNote++; // Increment currNote
             add(curr);
             whitePositions.add(x);
             x += curr.getWidth();
@@ -97,6 +97,10 @@ public class KeyboardPanel extends JPanel {
                 WhiteKey curr = (WhiteKey) keys.get(note);
                 curr.pressed();
             }
+        }
+        else {
+            System.out.println(note);
+            System.out.println("Key not found / Mapped Properly");
         }
     }
 
