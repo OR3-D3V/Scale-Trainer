@@ -1,52 +1,41 @@
+import Midi.MidiInputReceiver;
+import Midi.MidiKeyboardConnection;
+import Midi.ScaleSession;
 import UI.MainFrame;
 
-import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
-import java.util.Scanner;
 
 /**
- * Bootstraps the application UI and MIDI scale session.
+ * App entry point.
+ * <p>
+ * In plain terms: this is where we wire the MIDI receiver and open the main UI.
+ *
+ * <p><b>Quick flow</b></p>
+ * <pre>{@code
+ * ScaleSession session -> MidiInputReceiver receiver -> MidiKeyboardConnection connection -> MainFrame UI
+ * }</pre>
+ * <pre>
+ *      {@code
+ *      UI → MIDI Connection → Receiver → Session → UI
+ *      }
+ * </pre>
  */
 public class Main {
     /**
-     * Starts the application, initializes MIDI input, and prompts for scale settings.
+     * Starts the app.
+     * <p>
+     * We create the session first, then the MIDI receiver, then the MIDI connection,
+     * and finally the frame that lets the user pick a device.
      *
-     * @param args command-line arguments passed to the application
-     * @throws MidiUnavailableException if no selected MIDI device can be opened
+     * @param args normal JVM args (not used right now)
+     * @throws MidiUnavailableException thrown if the system cannot provide MIDI access
      */
     public static void main(String[] args) throws MidiUnavailableException {
-        // All Instances Of Required Objects
-
-
-
-        // Core MIDI connection and scale-session state.
+        ScaleSession scaleSession = new ScaleSession();
+        MidiInputReceiver midiInputReceiver = new MidiInputReceiver(scaleSession);
         MidiKeyboardConnection midiKeyboardConnection = new MidiKeyboardConnection();
-        MidiDevice currentMidiDevice = MidiKeyboardConnection.getDevices();
-
-
-        Scanner scanner = new Scanner(System.in);
-
-        ScaleSession scaleSession = new ScaleSession(currentMidiDevice, midiKeyboardConnection);
-        MidiInputReceiver inputReceiver = new MidiInputReceiver(scaleSession);
-
-        // Open the active MIDI device before wiring input/output.
-        currentMidiDevice.open();
-
-        // Route MIDI messages from the device transmitter.
-        midiKeyboardConnection.setTransmitter(currentMidiDevice.getTransmitter());
-
-
-        // Prompt user to choose a key and interval, then generate the scale.
-//        System.out.println("Enter a Key");
-//        String key = scanner.nextLine();
-//
-//        System.out.println("Enter the Interval (Minor / Major)");
-//        String interval = scanner.nextLine();
-
-//        scaleSession.generateScale(key, interval);
-
-        // Attach custom receiver to process incoming MIDI key events.
-        midiKeyboardConnection.setReceiver(inputReceiver);
-
+        midiKeyboardConnection.setReceiver(midiInputReceiver);
+        MainFrame mainFrame = new MainFrame(midiKeyboardConnection);
+        scaleSession.setFrame(mainFrame);
     }
 }

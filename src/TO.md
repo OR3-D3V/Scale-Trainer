@@ -23,12 +23,12 @@
 ## Class Roles
 - ### Main 
   - Instantiate Classes
-- ### MidiInputReceiver
+- ### Midi.MidiInputReceiver
   - Receives Midi Signal and transfers input to the Scale Session Class
-- ### MidiKeyboardConnection
-  - Has a Transmitter that connects to the MidiInputReceiver Class
+- ### Midi.MidiKeyboardConnection
+  - Has a Transmitter that connects to the Midi.MidiInputReceiver Class
   - Gets all midi devices
-- ### NoteUtil
+- ### Midi.NoteUtil
   - Does things like convert note value to letters and in reverse.
 - ### Scale Session
   - Main Activity

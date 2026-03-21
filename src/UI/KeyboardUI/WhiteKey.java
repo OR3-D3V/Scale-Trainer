@@ -3,9 +3,17 @@ package UI.KeyboardUI;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * One white piano key component.
+ * <p>
+ * The key turns green when pressed and back to white when released.
+ */
 public class WhiteKey extends JPanel implements Key{
     private final int height = 100;
     private final int width = 40;
+    /**
+     * Builds the key UI with fixed dimensions used by {@link KeyboardPanel}.
+     */
     public WhiteKey(){
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.white);
@@ -14,11 +22,12 @@ public class WhiteKey extends JPanel implements Key{
 
     }
 
+    /** Mark key as active/pressed. */
     public void pressed(){
-        System.out.println("Got here");
         setBackground(Color.green);
     }
 
+    /** Reset key color when note is released. */
     public void released(){
         this.setBackground(Color.white);
     }
