@@ -57,7 +57,7 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
                 close();
             }
             else{
-                session.sendPressedNote(noteNumber);
+                session.sendPressedNote(noteNumber, velocity);
             }
 
             // Handy debug format while testing keyboards/channels.
