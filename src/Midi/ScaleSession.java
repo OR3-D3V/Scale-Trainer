@@ -2,7 +2,10 @@ package Midi;
 
 import UI.MainFrame;
 
+import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -25,9 +28,19 @@ public class ScaleSession{
     /** MIDI connection helper used to close the transmitter on completion. */
     private MidiKeyboardConnection midiKeyboardConnection;
     private MainFrame frame;
-    /** Creates an empty session. Wiring happens from startup code. */
-    public ScaleSession(){
+    private Synthesizer synthesizer;
+    private MidiChannel midiChannel;
 
+
+    public void initSynth() {
+        try {
+            synthesizer = MidiSystem.getSynthesizer();
+            synthesizer.open();
+
+            midiChannel = synthesizer.getChannels()[3]; // use first channel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -122,8 +135,11 @@ public class ScaleSession{
      *
      * @param note MIDI note number (for example 60 for middle C)
      */
-    public void sendPressedNote(int note){
+    public void sendPressedNote(int note, int velocity){
         System.out.println("Got here");
+        if(midiChannel != null){
+            midiChannel.noteOn(note, velocity);
+        }
         frame.getKeyboardPanel().pressKey(note);
     }
 
@@ -133,6 +149,9 @@ public class ScaleSession{
      * @param note MIDI note number to release
      */
     public void sendReleasedNote(int note){
+        if(midiChannel != null){
+            midiChannel.noteOff(note);
+        }
         frame.getKeyboardPanel().releaseKey(note);
     }
 
