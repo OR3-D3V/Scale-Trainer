@@ -16,8 +16,8 @@
 ### 2. Key Data Mapping
 
 * [X] Assign a MIDI note number to each key
-* [ ] Store keys in a structure (e.g., Map<note, KeyPanel>)
-* [ ] Create methods:
+* [X] Store keys in a structure (e.g., Map<note, KeyPanel>)
+* [X] Create methods:
 
     * press()
     * release()

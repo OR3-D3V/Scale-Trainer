@@ -4,21 +4,38 @@ import UI.TempoComp.AscendButton;
 import UI.TempoComp.DescendButton;
 import UI.TempoComp.StartButton;
 import UI.TempoComp.TempoSlider;
+
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
+/**
+ * Top control strip for scale settings and MIDI device selection.
+ * <p>
+ * This panel does not open devices by itself. It only notifies {@link MainFrame}
+ * when the user picks a device from the drop-down.
+ */
 public class ControlBarPanel extends JPanel implements ActionListener {
     // You have to pass in reference data types to the ComboBox e.g(String). Primitive types would not work (int, double).
     private final String[] musicalNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
     private final String[] mode = {"Major", "Minor"};
     private JComboBox dropDown;
     private JComboBox modeDropDown;
+    private JComboBox midiDevicesDropDown;
+    private String[] midiDevices;
+    private MainFrame frame;
 
-    public ControlBarPanel(){
+    /**
+     * Builds all controls shown at the top of the app.
+     *
+     * @param midiDevices already discovered MIDI device names
+     * @param frame frame callback target for actions like device selection
+     */
+    public ControlBarPanel(String[] midiDevices, MainFrame frame){
+        this.midiDevices = midiDevices;
+        this.frame = frame;
         // Main Panel
         this.setPreferredSize(new Dimension(100, 100));
         this.setBackground(Color.WHITE);
@@ -67,6 +84,9 @@ public class ControlBarPanel extends JPanel implements ActionListener {
 
         //Start Button
 
+        // MIDI device picker (this is what triggers live MIDI routing).
+        midiDevicesDropDown = new JComboBox(midiDevices);
+        midiDevicesDropDown.addActionListener(this);
 
         //Add all components to the panel
         this.add(scale);
@@ -76,6 +96,7 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         this.add(ascendButton);
         this.add(descendButton);
         this.add(new StartButton());
+        this.add(midiDevicesDropDown);
         this.setVisible(true);
 
     }
@@ -84,6 +105,11 @@ public class ControlBarPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == dropDown){
             System.out.println(dropDown.getSelectedItem());
+        } else if (e.getSource() == midiDevicesDropDown) {
+            // We always pass the selected name back up to MainFrame.
+            frame.onDeviceSelected(Objects.requireNonNull(midiDevicesDropDown.getSelectedItem()).toString());
         }
     }
+
+
 }
