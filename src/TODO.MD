@@ -27,10 +27,10 @@
 
 ### 3. MIDI Integration
 
-* [ ] Connect to MIDI input device
-* [ ] Listen for MIDI messages (noteOn, noteOff)
-* [ ] Map MIDI note → corresponding key
-* [ ] Trigger:
+* [X] Connect to MIDI input device
+* [X] Listen for MIDI messages (noteOn, noteOff)
+* [X] Map MIDI note → corresponding key
+* [X] Trigger:
 
     * key.press() on noteOn
     * key.release() on noteOff

@@ -18,6 +18,7 @@ import java.util.Arrays;
 public class ScaleSession{
     /** Generated target scale as note names (for example: C D E F G A B C). */
     private String[] generatedScaleAsNotes;
+    private String[] currentInputScaleAsNotes;
 
     /** True when a session is complete and can be shut down. */
     private boolean completedSession = false;
@@ -30,14 +31,120 @@ public class ScaleSession{
     private MainFrame frame;
     private Synthesizer synthesizer;
     private MidiChannel midiChannel;
+    private String selectedKey;
+    private String selectedMode;
+
+    //===================== LOGIC =====================
+    public void startSession(String key, String mode){
+        System.out.println(key  +  " " + mode);
+        generateScale(key, mode);
+    }
+
+    // Actual Program, what checks the note and ends session
+    public void ongoingSession(int noteNumber){
+        for(int i = 0; i < currentInputScaleAsNotes.length; i++){
+            String currNote = currentInputScaleAsNotes[i];
+            if(currNote.equalsIgnoreCase("✅")){
+                continue;
+            }
+            else if(currNote.equalsIgnoreCase("❌")){
+                continue;
+            }
+            else {
+                if(NoteUtil.getNoteBasedOnNumber(noteNumber).equalsIgnoreCase(currNote)){
+                    System.out.println(currNote);
+                    sendValidNote(noteNumber);
+                    currentInputScaleAsNotes[i] = "✅";
+                    break;
+                }
+                else {
+                    sendInvalidNote(noteNumber);
+                    break;
+                }
+            }
+        }
+    }
 
 
+    // ==================== SETTERS ====================
+
+    /** Save generated scale using note names. */
+    private void setGeneratedScaleAsNotes(int [] scaleAsNumbers){
+        generatedScaleAsNotes = scaleNumberToNotes(scaleAsNumbers);
+        currentInputScaleAsNotes = Arrays.copyOf(generatedScaleAsNotes, generatedScaleAsNotes.length);
+    }
+
+    public void setSelectedKey(String key){
+        selectedKey = key;
+    }
+
+    public void setSelectedMode(String mode){
+        selectedMode = mode;
+    }
+
+    public void setFrame(MainFrame frame){
+        this.frame = frame;
+    }
+
+    // ==================== GETTERS ====================
+
+    /** @return current target scale state */
+    private String[] getGeneratedScaleAsNotes(){
+        return generatedScaleAsNotes;
+    }
+
+    /** @return true when this session is marked complete */
+    public boolean getCompletionStatus(){
+        return completedSession;
+    }
+
+    // ==================== SEND METHODS ====================
+
+    /**
+     * Forward MIDI NOTE_ON to keyboard UI.
+     *
+     * @param note MIDI note number (for example 60 for middle C)
+     */
+    public void sendPressedNote(int note, int velocity){
+        System.out.println("Got here");
+        ongoingSession(note);
+        if(midiChannel != null){
+            midiChannel.noteOn(note, velocity);
+        }
+    }
+
+    public void sendValidNote(int noteNumber){
+        frame.getKeyboardPanel().pressKey(noteNumber, true);
+
+    }
+
+    public void sendInvalidNote(int noteNumber){
+        frame.getKeyboardPanel().pressKey(noteNumber, false);
+
+    }
+
+
+    /**
+     * Forward MIDI NOTE_OFF to keyboard UI.
+     *
+     * @param note MIDI note number to release
+     */
+    public void sendReleasedNote(int note){
+        if(midiChannel != null){
+            midiChannel.noteOff(note);
+        }
+        frame.getKeyboardPanel().releaseKey(note);
+    }
+
+    // ==================== HELPER METHODS ====================
+
+    /** Initialize synthesizer and get the first MIDI channel. */
     public void initSynth() {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
 
-            midiChannel = synthesizer.getChannels()[3]; // use first channel
+            midiChannel = synthesizer.getChannels()[0]; // use first channel
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,6 +186,7 @@ public class ScaleSession{
                 generatedScale[i] = generatedScale[0];
             }
             else {
+                // noteNum is the previous note + interval(addition)
                 int noteNum = (generatedScale[i - 1] + selectedScale[i]);
                 if(noteNum > 11){ // If it is more than 11 then go back to 0 as we only have notes from 0 - 11
                     generatedScale[i] = (noteNum % 11) - 1;
@@ -108,54 +216,10 @@ public class ScaleSession{
         return scaleInLetters;
     }
 
-    /** Save generated scale using note names. */
-    private void setGeneratedScaleAsNotes(int [] scaleAsNumbers){
-        generatedScaleAsNotes = scaleNumberToNotes(scaleAsNumbers);
-    }
-
-
-    /** @return current target scale state */
-    private String[] getGeneratedScaleAsNotes(){
-        return generatedScaleAsNotes;
-    }
-
-    /** @return true when this session is marked complete */
-    public boolean getCompletionStatus(){
-        return completedSession;
-    }
 
     /** Close MIDI resources when a session finishes. */
     private void onCompletion(){
         midiKeyboardConnection.closeTransmitter(); // Close Transmitter
         currentMidiDevice.close(); // Closes the Midi Device
-    }
-
-    /**
-     * Forward MIDI NOTE_ON to keyboard UI.
-     *
-     * @param note MIDI note number (for example 60 for middle C)
-     */
-    public void sendPressedNote(int note, int velocity){
-        System.out.println("Got here");
-        if(midiChannel != null){
-            midiChannel.noteOn(note, velocity);
-        }
-        frame.getKeyboardPanel().pressKey(note);
-    }
-
-    /**
-     * Forward MIDI NOTE_OFF to keyboard UI.
-     *
-     * @param note MIDI note number to release
-     */
-    public void sendReleasedNote(int note){
-        if(midiChannel != null){
-            midiChannel.noteOff(note);
-        }
-        frame.getKeyboardPanel().releaseKey(note);
-    }
-
-    public void setFrame(MainFrame frame){
-        this.frame = frame;
     }
 }

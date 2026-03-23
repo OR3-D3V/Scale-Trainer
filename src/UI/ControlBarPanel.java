@@ -19,13 +19,16 @@ import java.util.Objects;
  */
 public class ControlBarPanel extends JPanel implements ActionListener {
     // You have to pass in reference data types to the ComboBox e.g(String). Primitive types would not work (int, double).
-    private final String[] musicalNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-    private final String[] mode = {"Major", "Minor"};
-    private JComboBox dropDown;
+    private final String[] musicalNotes = {"Key", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    private final String[] mode = {"Select mode", "Major", "Minor"};
+    private JComboBox noteDropDown;
     private JComboBox modeDropDown;
     private JComboBox midiDevicesDropDown;
     private String[] midiDevices;
     private MainFrame frame;
+    private String selectedKey;
+    private String selectedMode;
+    private StartButton startButton;
 
     /**
      * Builds all controls shown at the top of the app.
@@ -36,6 +39,7 @@ public class ControlBarPanel extends JPanel implements ActionListener {
     public ControlBarPanel(String[] midiDevices, MainFrame frame){
         this.midiDevices = midiDevices;
         this.frame = frame;
+
         // Main Panel
         this.setPreferredSize(new Dimension(100, 100));
         this.setBackground(Color.WHITE);
@@ -45,25 +49,30 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         JPanel scale = new JPanel(new FlowLayout());
         scale.setVisible(true);
 
-            //Label
+        //Label
         JLabel label = new JLabel("Key/Scale: ");
-            //Combobox
-        dropDown = new JComboBox(musicalNotes);
-        dropDown.addActionListener(this); // You have to add a listener for it to work.
 
-            //Add all
+        //Combobox
+        noteDropDown = new JComboBox(musicalNotes);
+        noteDropDown.addActionListener(this); // You have to add a listener for it to work.
+
+
+        //Add all
         scale.add(label);
-        scale.add(dropDown);
+        scale.add(noteDropDown);
 
         //Type or Mode Panel
         JPanel typePanel = new JPanel(new FlowLayout());
         typePanel.setVisible(true);
-            //Text
+
+        //Text
         JLabel typeText = new JLabel("Type: ");
-            //Combo
+
+        //Combo
         modeDropDown = new JComboBox(mode);
         modeDropDown.addActionListener(this);
-            //Add all
+
+        //Add all
         typePanel.add(typeText);
         typePanel.add(modeDropDown);
 
@@ -82,8 +91,6 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         //Descend Button
         DescendButton descendButton = new DescendButton();
 
-        //Start Button
-
         // MIDI device picker (this is what triggers live MIDI routing).
         midiDevicesDropDown = new JComboBox(midiDevices);
         midiDevicesDropDown.addActionListener(this);
@@ -95,7 +102,7 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         this.add(tempoSlider.getTempoValue());
         this.add(ascendButton);
         this.add(descendButton);
-        this.add(new StartButton());
+        this.add(startButton = new StartButton(this));
         this.add(midiDevicesDropDown);
         this.setVisible(true);
 
@@ -103,13 +110,39 @@ public class ControlBarPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == dropDown){
-            System.out.println(dropDown.getSelectedItem());
+
+        if(e.getSource() == noteDropDown){
+            if(noteDropDown.getSelectedIndex() != 0){
+                selectedKey = Objects.requireNonNull(noteDropDown.getSelectedItem()).toString();
+            }
         } else if (e.getSource() == midiDevicesDropDown) {
             // We always pass the selected name back up to MainFrame.
             frame.onDeviceSelected(Objects.requireNonNull(midiDevicesDropDown.getSelectedItem()).toString());
         }
+        else if (e.getSource() == modeDropDown){
+            if (modeDropDown.getSelectedIndex() != 0){
+                selectedMode = Objects.requireNonNull(modeDropDown.getSelectedItem()).toString();
+            }
+        }
     }
+
+    // ================ GETTERS =================
+    public String getSelectedKey(){
+        return selectedKey;
+    }
+    public String getSelectedMode(){
+        return selectedMode;
+    }
+
+    // ================ HELPERS ==================
+    public void callStart(){
+        if(frame.onStartButtonClicked()){
+            startButton.setText("Stop");
+            startButton.setForeground(Color.RED);
+            startButton.setEnabled(false);
+        }
+    }
+
 
 
 }

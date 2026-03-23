@@ -9,6 +9,7 @@ public class BlackKey extends JPanel implements Key{
     private Color color = Color.BLACK;
     private Color borderColor = Color.red;
     private int borderThickness = 2;
+    private boolean valid;
     public BlackKey(){
         this.setPreferredSize(new Dimension(width, height));
         setBorder(BorderFactory.createLineBorder(borderColor, borderThickness));
@@ -21,7 +22,12 @@ public class BlackKey extends JPanel implements Key{
     }
 
     public void released(){
-        setBackground(Color.black);
+        if(valid){
+            this.setBackground(Color.green);
+        }
+        else {
+            setBackground(Color.red);
+        }
     }
     public int getWidth(){
         return width;
@@ -30,5 +36,10 @@ public class BlackKey extends JPanel implements Key{
 
     public int getHeight(){
         return height;
+    }
+
+    @Override
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

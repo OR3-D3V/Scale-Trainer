@@ -11,6 +11,7 @@ import java.awt.*;
 public class WhiteKey extends JPanel implements Key{
     private final int height = 100;
     private final int width = 40;
+    private boolean valid = false;
     /**
      * Builds the key UI with fixed dimensions used by {@link KeyboardPanel}.
      */
@@ -24,12 +25,17 @@ public class WhiteKey extends JPanel implements Key{
 
     /** Mark key as active/pressed. */
     public void pressed(){
-        setBackground(Color.green);
+        setBackground(Color.yellow);
     }
 
     /** Reset key color when note is released. */
     public void released(){
-        this.setBackground(Color.white);
+        if(valid){
+            this.setBackground(Color.green);
+        }
+        else {
+            setBackground(Color.red);
+        }
     }
 
     public int getWidth(){
@@ -39,5 +45,9 @@ public class WhiteKey extends JPanel implements Key{
 
     public int getHeight(){
         return this.height;
+    }
+
+    public void setValid(boolean valid){
+        this.valid = valid;
     }
 }

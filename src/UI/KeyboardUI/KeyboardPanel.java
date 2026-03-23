@@ -97,16 +97,17 @@ public class KeyboardPanel extends JLayeredPane {
     }
 
 
-    public void pressKey(int note){
-        System.out.println("HERE");
+    public void pressKey(int note, boolean valid){
         if(keys.containsKey(note)){
             if(isBlack(note)){
                 BlackKey curr = (BlackKey) keys.get(note);
                 curr.pressed();
+                curr.setValid(valid);
             }
             else {
                 WhiteKey curr = (WhiteKey) keys.get(note);
                 curr.pressed();
+                curr.setValid(valid);
             }
         }
         else {
@@ -114,6 +115,7 @@ public class KeyboardPanel extends JLayeredPane {
             System.out.println("Key not found / Mapped Properly");
         }
     }
+
 
     public void releaseKey(int note){
         if(keys.containsKey(note)){

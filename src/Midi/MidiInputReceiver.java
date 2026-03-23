@@ -54,9 +54,11 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
 
             // If session is done, stop receiving. Otherwise update UI/session.
             if(this.session.getCompletionStatus()){
+                System.out.println("Here");
                 close();
             }
             else{
+
                 session.sendPressedNote(noteNumber, velocity);
             }
 

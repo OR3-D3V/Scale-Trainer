@@ -1,12 +1,17 @@
 package UI.TempoComp;
 
+import UI.ControlBarPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class StartButton extends JToggleButton implements ActionListener {
-    public StartButton(){
+
+    private ControlBarPanel controlBarPanel;
+    public StartButton(ControlBarPanel controlBarPanel){
+        this.controlBarPanel = controlBarPanel;
         super("Start");
         this.setForeground(Color.GREEN);
         this.setVisible(true);
@@ -18,15 +23,15 @@ public class StartButton extends JToggleButton implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this){
             if(this.isSelected()){
-                this.setText("Stop");
-                this.setForeground(Color.RED);
+                controlBarPanel.callStart();
                 System.out.println("Starting Now . . . .");
             }
-            else {
-                this.setText("Start");
-                this.setForeground(Color.GREEN);
-                System.out.println("Ending . . . . . .");
-            }
+            // Temporary Comment Out
+//            else {
+//                this.setText("Start");
+//                this.setForeground(Color.GREEN);
+//                System.out.println("Ending . . . . . .");
+//            }
         }
     }
 }
