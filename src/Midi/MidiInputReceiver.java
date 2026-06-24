@@ -28,11 +28,14 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
     /**
      * Called by Java MIDI every time a message arrives from the active device.
      *
-     * <p><b>What we care about</b></p>
+     * <p><b>Event policy</b></p>
      * <ul>
-     *   <li>{@code NOTE_ON} with velocity {@code > 0}: key pressed</li>
-     *   <li>{@code NOTE_OFF}: key released</li>
+     *   <li>{@code NOTE_ON} with velocity {@code > 0}: note press</li>
+     *   <li>{@code NOTE_OFF} with velocity {@code == 0}: note release (current app policy)</li>
      * </ul>
+     *
+     * <p>When the session is already complete, this receiver triggers completion cleanup
+     * and does not forward further note-on events to the session.</p>
      *
      * @param message raw MIDI payload
      * @param timeStamp event timestamp from the MIDI system
@@ -52,8 +55,10 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
             int velocity   = sm.getData2();
             int channel    = sm.getChannel();
 
-            // If session is done, stop receiving. Otherwise update UI/session.
+            // Completion is checked at input time so we can disconnect MIDI immediately
+            // and prevent any additional NOTE_ON from being processed for this session.
             if(this.session.getCompletionStatus()){
+                session.callOnCompletion();
                 close();
             }
             else{
@@ -77,7 +82,9 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
     /**
      * Receiver shutdown hook.
      * <p>
-     * Kept as a no-op for now because transmitter/device cleanup happens elsewhere.
+     * Intentionally a no-op: this receiver does not own the MIDI transmitter/device.
+     * Resource cleanup is delegated to {@link ScaleSession#callOnCompletion()} via
+     * {@link MidiKeyboardConnection#disconnect()}.
      */
     @Override
     public void close() {

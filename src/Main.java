@@ -35,7 +35,8 @@ public class Main {
         MidiInputReceiver midiInputReceiver = new MidiInputReceiver(scaleSession);
         MidiKeyboardConnection midiKeyboardConnection = new MidiKeyboardConnection();
         midiKeyboardConnection.setReceiver(midiInputReceiver);
-        MainFrame mainFrame = new MainFrame(midiKeyboardConnection);
+        scaleSession.setMidiKeyboardConnection(midiKeyboardConnection);
+        MainFrame mainFrame = new MainFrame(midiKeyboardConnection, scaleSession);
         scaleSession.setFrame(mainFrame);
         scaleSession.initSynth();
     }

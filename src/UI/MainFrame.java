@@ -1,5 +1,6 @@
 package UI;
 
+import Midi.ScaleSession;
 import UI.KeyboardUI.KeyboardPanel;
 import Midi.MidiKeyboardConnection;
 
@@ -18,6 +19,8 @@ import java.awt.event.ActionListener;
 public class MainFrame extends JFrame implements ActionListener {
     private final KeyboardPanel keyboardPanel;
     private MidiKeyboardConnection midiKeyboardConnection;
+    private ScaleSession currentSession;
+    private ControlBarPanel controlBarPanel;
 
     /**
      * Builds the UI and injects the MIDI connection object.
@@ -31,9 +34,11 @@ public class MainFrame extends JFrame implements ActionListener {
      * @param midiKeyboardConnection shared MIDI connection manager for device selection
      * @throws MidiUnavailableException if device enumeration fails while building the control bar
      */
-    public MainFrame(MidiKeyboardConnection midiKeyboardConnection) throws MidiUnavailableException {
+    public MainFrame(MidiKeyboardConnection midiKeyboardConnection, ScaleSession session) throws MidiUnavailableException {
         this.midiKeyboardConnection = midiKeyboardConnection;
+        currentSession = session;
         this.setTitle("Scale Trainer App");
+        // App exits on window close; session-end MIDI cleanup is handled in ScaleSession.
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
@@ -41,7 +46,7 @@ public class MainFrame extends JFrame implements ActionListener {
         setResizable(false);
 
         // Pass this frame so the top bar can call back when device selection changes.
-        ControlBarPanel controlBarPanel = new ControlBarPanel(midiKeyboardConnection.getDevices(), this);
+        controlBarPanel = new ControlBarPanel(midiKeyboardConnection.getDevices(), this);
         this.add(controlBarPanel, BorderLayout.NORTH);
 
         // Piano section is independent from device selection UI.
@@ -70,6 +75,18 @@ public class MainFrame extends JFrame implements ActionListener {
     public void onDeviceSelected(String name){
         System.out.println(name);
         midiKeyboardConnection.setMidiDevice(name);
+    }
+
+    public boolean onStartButtonClicked(){
+        if(sessionReady()){
+            currentSession.startSession(controlBarPanel.getSelectedKey(), controlBarPanel.getSelectedMode());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sessionReady(){
+        return (controlBarPanel.getSelectedKey() != null && controlBarPanel.getSelectedMode() != null);
     }
 
 

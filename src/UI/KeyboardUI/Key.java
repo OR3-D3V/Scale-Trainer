@@ -5,4 +5,6 @@ public interface Key {
     public void released();
     public int getWidth();
     public int getHeight();
+
+    void setValid(boolean valid);
 }

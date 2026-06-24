@@ -18,6 +18,8 @@ import java.util.Arrays;
 public class ScaleSession{
     /** Generated target scale as note names (for example: C D E F G A B C). */
     private String[] generatedScaleAsNotes;
+    // Mutable copy used as session progress state. Items are replaced with marker values as notes are consumed.
+    private String[] currentInputScaleAsNotes;
 
     /** True when a session is complete and can be shut down. */
     private boolean completedSession = false;
@@ -30,14 +32,155 @@ public class ScaleSession{
     private MainFrame frame;
     private Synthesizer synthesizer;
     private MidiChannel midiChannel;
+    private String selectedKey;
+    private String selectedMode;
+
+    //===================== LOGIC =====================
+    public void startSession(String key, String mode){
+        System.out.println(key  +  " " + mode);
+        generateScale(key, mode);
+    }
+
+    /**
+     * Processes each incoming note against the next expected note in the scale.
+     * <p>
+     * The first unconsumed slot in {@code currentInputScaleAsNotes} is the expected note.
+     * A match is marked as consumed and painted valid; a mismatch is painted invalid.
+     * Once the final slot is consumed, the session is flagged complete.
+     *
+     * <p>Current implementation uses inline sentinel text values ("✅" / "❌") to mark
+     * consumed or invalid states. If you later add a constant like NOTE_DONE_MARKER,
+     * this is the method where it is read and written.</p>
+     *
+     * @param noteNumber incoming MIDI note number
+     */
+    public void ongoingSession(int noteNumber){
+        for(int i = 0; i < currentInputScaleAsNotes.length; i++){
+            String currNote = currentInputScaleAsNotes[i];
+
+            // "✅" acts like a NOTE_DONE_MARKER sentinel: this expected position is already completed.
+            if(currNote.equalsIgnoreCase("✅")){
+                continue;
+            }
+            // "❌" is currently treated as already-handled state as well.
+            else if(currNote.equalsIgnoreCase("❌")){
+                continue;
+            }
+            // Send Note If Session is active
+            else {
+                if(NoteUtil.getNoteBasedOnNumber(noteNumber).equalsIgnoreCase(currNote)){
+                    System.out.println(currNote);
+                    sendValidNote(noteNumber);
+                    // Mark this slot as consumed so the next incoming note is validated against the next scale note.
+                    currentInputScaleAsNotes[i] = "✅";
+
+                    // Index 7 is the octave slot in the 8-note generated scale (root to octave).
+                    if(i == 7 && currentInputScaleAsNotes[i].equalsIgnoreCase("✅")){
+                        completedSession = true;
+                        System.out.println("Session Complete");
+                    }
+                    break;
+                }
+
+                // This should send an invalid note if the not is not in the scale and session is active.
+                else {
+                    sendInvalidNote(noteNumber);
+                    break;
+                }
+            }
+        }
+    }
 
 
+    // ==================== SETTERS ====================
+
+    /** Save generated scale using note names. */
+    private void setGeneratedScaleAsNotes(int [] scaleAsNumbers){
+        generatedScaleAsNotes = scaleNumberToNotes(scaleAsNumbers);
+        currentInputScaleAsNotes = Arrays.copyOf(generatedScaleAsNotes, generatedScaleAsNotes.length);
+    }
+
+    public void setSelectedKey(String key){
+        selectedKey = key;
+    }
+
+    public void setSelectedMode(String mode){
+        selectedMode = mode;
+    }
+
+    public void setFrame(MainFrame frame){
+        this.frame = frame;
+    }
+
+    /**
+     * Injects the shared MIDI connection so completion cleanup can disconnect input.
+     *
+     * @param midiKeyboardConnection active MIDI connection manager
+     */
+    public void setMidiKeyboardConnection(MidiKeyboardConnection midiKeyboardConnection) {
+        this.midiKeyboardConnection = midiKeyboardConnection;
+    }
+
+    // ==================== GETTERS ====================
+
+    /** @return current target scale state */
+    private String[] getGeneratedScaleAsNotes(){
+        return generatedScaleAsNotes;
+    }
+
+    /** @return true when this session is marked complete */
+    public boolean getCompletionStatus(){
+        return completedSession;
+    }
+
+
+    // ==================== SEND METHODS ====================
+
+    /**
+     * Forward MIDI NOTE_ON to keyboard UI.
+     *
+     * @param note MIDI note number (for example 60 for middle C)
+     */
+    public void sendPressedNote(int note, int velocity){
+//        System.out.println("Got here");
+        ongoingSession(note);
+        if(midiChannel != null){
+            midiChannel.noteOn(note, velocity);
+        }
+    }
+
+    public void sendValidNote(int noteNumber){
+        frame.getKeyboardPanel().pressKey(noteNumber, true);
+
+    }
+
+    public void sendInvalidNote(int noteNumber){
+        frame.getKeyboardPanel().pressKey(noteNumber, false);
+
+    }
+
+
+    /**
+     * Forward MIDI NOTE_OFF to keyboard UI.
+     *
+     * @param note MIDI note number to release
+     */
+    public void sendReleasedNote(int note){
+        if(midiChannel != null){
+            midiChannel.noteOff(note);
+        }
+        frame.getKeyboardPanel().releaseKey(note);
+    }
+
+    // ==================== HELPER METHODS ====================
+
+    /** Initialize synthesizer and get the first MIDI channel. */
     public void initSynth() {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
 
-            midiChannel = synthesizer.getChannels()[3]; // use first channel
+            midiChannel = synthesizer.getChannels()[0]; // use first channel
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,6 +222,7 @@ public class ScaleSession{
                 generatedScale[i] = generatedScale[0];
             }
             else {
+                // noteNum is the previous note + interval(addition)
                 int noteNum = (generatedScale[i - 1] + selectedScale[i]);
                 if(noteNum > 11){ // If it is more than 11 then go back to 0 as we only have notes from 0 - 11
                     generatedScale[i] = (noteNum % 11) - 1;
@@ -108,54 +252,22 @@ public class ScaleSession{
         return scaleInLetters;
     }
 
-    /** Save generated scale using note names. */
-    private void setGeneratedScaleAsNotes(int [] scaleAsNumbers){
-        generatedScaleAsNotes = scaleNumberToNotes(scaleAsNumbers);
-    }
 
-
-    /** @return current target scale state */
-    private String[] getGeneratedScaleAsNotes(){
-        return generatedScaleAsNotes;
-    }
-
-    /** @return true when this session is marked complete */
-    public boolean getCompletionStatus(){
-        return completedSession;
-    }
-
-    /** Close MIDI resources when a session finishes. */
+    /**
+     * Closes MIDI input resources when the session finishes.
+     * <p>
+     * This method is currently invoked from the MIDI receiver callback path.
+     */
     private void onCompletion(){
-        midiKeyboardConnection.closeTransmitter(); // Close Transmitter
-        currentMidiDevice.close(); // Closes the Midi Device
-    }
-
-    /**
-     * Forward MIDI NOTE_ON to keyboard UI.
-     *
-     * @param note MIDI note number (for example 60 for middle C)
-     */
-    public void sendPressedNote(int note, int velocity){
-        System.out.println("Got here");
-        if(midiChannel != null){
-            midiChannel.noteOn(note, velocity);
+        if(midiKeyboardConnection != null){
+            midiKeyboardConnection.disconnect(); // Disconnect transmitter and active input device.
         }
-        frame.getKeyboardPanel().pressKey(note);
     }
 
-    /**
-     * Forward MIDI NOTE_OFF to keyboard UI.
-     *
-     * @param note MIDI note number to release
-     */
-    public void sendReleasedNote(int note){
-        if(midiChannel != null){
-            midiChannel.noteOff(note);
-        }
-        frame.getKeyboardPanel().releaseKey(note);
+    /** Public completion hook used by {@link MidiInputReceiver} once session is done. */
+    public void callOnCompletion(){
+        onCompletion();
     }
 
-    public void setFrame(MainFrame frame){
-        this.frame = frame;
-    }
+
 }
