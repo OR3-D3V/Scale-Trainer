@@ -26,12 +26,12 @@ public class StartButton extends JToggleButton implements ActionListener {
                 controlBarPanel.callStart();
                 System.out.println("Starting Now . . . .");
             }
-            // Temporary Comment Out
-//            else {
-//                this.setText("Start");
-//                this.setForeground(Color.GREEN);
-//                System.out.println("Ending . . . . . .");
-//            }
+            else {
+                controlBarPanel.callStop();
+                this.setText("Start");
+                this.setForeground(Color.GREEN);
+                System.out.println("Ending . . . . . .");
+            }
         }
     }
 }

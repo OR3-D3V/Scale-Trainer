@@ -36,8 +36,21 @@ public class ScaleSession{
     private String selectedMode;
 
     //===================== LOGIC =====================
+
+    /**
+     * Resets all session progress so a new session can start cleanly.
+     * Must be called before re-starting, whether triggered by Stop or automatic completion.
+     */
+    public void resetSession(){
+        completedSession = false;
+        currentInputScaleAsNotes = null;
+    }
+
     public void startSession(String key, String mode){
+        // Always reset progress state so a restarted session begins fresh.
+        resetSession();
         System.out.println(key  +  " " + mode);
+
         generateScale(key, mode);
     }
 

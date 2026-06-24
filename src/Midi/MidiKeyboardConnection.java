@@ -38,6 +38,12 @@ public class MidiKeyboardConnection {
 
     private int activeDeviceIndex;
 
+    private String currentMidiDeviceName;
+
+    public String getCurrentActiveDevice(){
+        return currentMidiDeviceName;
+    }
+
     /**
      * Gets only MIDI devices that can actually transmit NOTE events.
      *
@@ -150,6 +156,15 @@ public class MidiKeyboardConnection {
         if (activeDevice != null && activeDevice.isOpen()) {
             activeDevice.close();
             activeDevice = null;
+            currentMidiDeviceName = null;
+        }
+    }
+
+
+    public void reconnect(String currentMidiDeviceName){
+        if (activeDevice == null){
+            this.currentMidiDeviceName = currentMidiDeviceName;
+            setMidiDevice(currentMidiDeviceName);
         }
     }
 }

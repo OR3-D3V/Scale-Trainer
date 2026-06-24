@@ -12,6 +12,7 @@ public class WhiteKey extends JPanel implements Key{
     private final int height = 100;
     private final int width = 40;
     private boolean valid = false;
+    private Color defaultColor = Color.white;
     /**
      * Builds the key UI with fixed dimensions used by {@link KeyboardPanel}.
      */
@@ -49,5 +50,20 @@ public class WhiteKey extends JPanel implements Key{
 
     public void setValid(boolean valid){
         this.valid = valid;
+    }
+
+    public Color getDefaultColor() {
+        return defaultColor;
+    }
+
+    public void setDefaultColor(Color defaultColor) {
+        this.defaultColor = defaultColor;
+    }
+
+    public Color getCurrentColor(){
+        return this.getBackground();
+    }
+    public void setCurrentColor(Color currentColor){
+        this.setBackground(currentColor);
     }
 }

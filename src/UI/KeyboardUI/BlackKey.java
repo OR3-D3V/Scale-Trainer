@@ -10,6 +10,7 @@ public class BlackKey extends JPanel implements Key{
     private Color borderColor = Color.black;
     private int borderThickness = 2;
     private boolean valid;
+    private Color defaultColor = Color.black;
     public BlackKey(){
         this.setPreferredSize(new Dimension(width, height));
         setBorder(BorderFactory.createLineBorder(borderColor, borderThickness));
@@ -41,5 +42,21 @@ public class BlackKey extends JPanel implements Key{
     @Override
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public Color getDefaultColor() {
+        return defaultColor;
+    }
+
+    public void setDefaultColor(Color defaultColor) {
+        this.defaultColor = defaultColor;
+    }
+
+    public Color getCurrentColor(){
+        return this.getBackground();
+    }
+
+    public void setCurrentColor(Color currentColor){
+        this.setBackground(currentColor);
     }
 }

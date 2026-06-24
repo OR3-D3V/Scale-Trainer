@@ -29,7 +29,7 @@ public class ControlBarPanel extends JPanel implements ActionListener {
     private String selectedKey;
     private String selectedMode;
     private StartButton startButton;
-
+    private String midiDeviceName;
     /**
      * Builds all controls shown at the top of the app.
      *
@@ -117,7 +117,8 @@ public class ControlBarPanel extends JPanel implements ActionListener {
             }
         } else if (e.getSource() == midiDevicesDropDown) {
             // We always pass the selected name back up to MainFrame.
-            frame.onDeviceSelected(Objects.requireNonNull(midiDevicesDropDown.getSelectedItem()).toString());
+            midiDeviceName = Objects.requireNonNull(midiDevicesDropDown.getSelectedItem()).toString();
+            frame.onDeviceSelected(midiDeviceName);
         }
         else if (e.getSource() == modeDropDown){
             if (modeDropDown.getSelectedIndex() != 0){
@@ -134,13 +135,24 @@ public class ControlBarPanel extends JPanel implements ActionListener {
         return selectedMode;
     }
 
+    public String getMidiDeviceName(){
+        return midiDeviceName;
+    }
+
+
+
     // ================ HELPERS ==================
     public void callStart(){
         if(frame.onStartButtonClicked()){
             startButton.setText("Stop");
             startButton.setForeground(Color.RED);
-            startButton.setEnabled(false);
+            startButton.setEnabled(true);
         }
+    }
+
+    // Clear all key highlights
+    public void callStop(){
+        frame.removeAllHighlightedColors();
     }
 
 
