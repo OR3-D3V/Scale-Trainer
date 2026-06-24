@@ -18,7 +18,7 @@ public class WhiteKey extends JPanel implements Key{
     public WhiteKey(){
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.white);
-        setBorder(BorderFactory.createLineBorder(Color.blue, 1));
+        setBorder(BorderFactory.createLineBorder(Color.black, 1));
         setVisible(true);
 
     }

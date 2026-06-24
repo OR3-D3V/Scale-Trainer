@@ -15,7 +15,7 @@ public class TempoSlider extends JSlider implements ChangeListener {
     @Override
     public void stateChanged(ChangeEvent e) {
         if(e.getSource() == this){
-            System.out.println(tempoValue.getText());
+//            System.out.println(tempoValue.getText());
             tempoValue.setText(this.getValue() + " BPM");
         }
     }

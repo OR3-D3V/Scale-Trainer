@@ -39,16 +39,16 @@
 
 ### 4. Scale Logic
 
-* [ ] Define scale patterns (Major, Minor, etc.)
-* [ ] Generate scale notes from root note
-* [ ] Store current active scale
-* [ ] Validate user input against scale
+* [x] Define scale patterns (Major, Minor)
+* [x] Generate scale notes from root note
+* [x] Store current active scale
+* [x] Validate user input against scale
 
 ---
 
 ### 5. Visual Feedback
 
-* [ ] Highlight scale notes on keyboard
+* [x] Highlight scale notes on keyboard through press/release feedback
 * [ ] Different colors:
 
     * pressed note (user input)
@@ -60,11 +60,12 @@
 
 ### 6. Control Panel (Top UI)
 
-* [ ] Dropdown: select root note (C, D, E…)
-* [ ] Dropdown: select scale type (Major, Minor…)
+* [x] Dropdown: select root note (C, D, E…)
+* [x] Dropdown: select scale type (Major, Minor…)
+* [x] Dropdown: select MIDI input device
 * [ ] Buttons:
 
-    * Start / Generate scale
+    * [x] Start / Generate scale
     * Reveal scale
     * Reset
 
@@ -73,9 +74,9 @@
 ### 7. Practice Mode Logic
 
 * [ ] Generate random scale
-* [ ] Wait for user to play notes
-* [ ] Track progress through the scale
-* [ ] Give feedback (correct / incorrect)
+* [x] Wait for user to play notes
+* [x] Track progress through the scale
+* [x] Give feedback (correct / incorrect)
 * [ ] Move to next scale
 
 ---
@@ -92,7 +93,7 @@
 ### 9. Code Structure / Cleanup
 
 * [ ] Separate UI and logic (avoid mixing)
-* [ ] Create classes:
+* [x] Create classes:
 
     * KeyboardPanel
     * KeyPanel
@@ -108,6 +109,7 @@
 * [ ] Test key highlighting accuracy
 * [ ] Test edge cases (fast input, repeated notes)
 * [ ] Ensure no UI freezing (thread handling)
+* [ ] Re-test startup order issue (key/mode before MIDI vs MIDI before key/mode)
 
 ---
 

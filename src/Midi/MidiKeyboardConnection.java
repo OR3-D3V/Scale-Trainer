@@ -79,7 +79,7 @@ public class MidiKeyboardConnection {
         try{
             MidiDevice.Info[] allDev =MidiSystem.getMidiDeviceInfo();
             if( activeDevice != null && activeDevice.isOpen()){
-                // Hot-swap: close previously selected device.
+                // Hot-swap order: close old device before opening the new one.
                 activeDevice.close();
             }
 
@@ -90,7 +90,7 @@ public class MidiKeyboardConnection {
                     activeDevice.open();
                     transmitter = activeDevice.getTransmitter();
                     if(receiver != null){
-                        // If receiver was already configured, re-wire immediately.
+                        // Receiver may be configured before device selection; bind it now.
                         transmitter.setReceiver(receiver);
                     }
                     break;
@@ -128,6 +128,28 @@ public class MidiKeyboardConnection {
      * Closes the current transmitter if one is active.
      */
     public void closeTransmitter(){
-        this.transmitter.close();
+        if(this.transmitter != null){
+            this.transmitter.close();
+        }
+    }
+
+    /**
+     * Fully disconnects MIDI input resources for the current session.
+     * <p>
+     * Safe to call multiple times. After this method returns, the active transmitter
+     * is detached and closed, and the active device is closed if it was open.
+     */
+    public void disconnect() {
+        if (transmitter != null) {
+            // Detach receiver first to stop callbacks before closing resources.
+            transmitter.setReceiver(null);
+            transmitter.close();
+            transmitter = null;
+        }
+
+        if (activeDevice != null && activeDevice.isOpen()) {
+            activeDevice.close();
+            activeDevice = null;
+        }
     }
 }

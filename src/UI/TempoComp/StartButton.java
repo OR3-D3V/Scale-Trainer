@@ -11,8 +11,8 @@ public class StartButton extends JToggleButton implements ActionListener {
 
     private ControlBarPanel controlBarPanel;
     public StartButton(ControlBarPanel controlBarPanel){
-        this.controlBarPanel = controlBarPanel;
         super("Start");
+        this.controlBarPanel = controlBarPanel;
         this.setForeground(Color.GREEN);
         this.setVisible(true);
         addActionListener(this);

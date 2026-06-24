@@ -38,6 +38,7 @@ public class MainFrame extends JFrame implements ActionListener {
         this.midiKeyboardConnection = midiKeyboardConnection;
         currentSession = session;
         this.setTitle("Scale Trainer App");
+        // App exits on window close; session-end MIDI cleanup is handled in ScaleSession.
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);

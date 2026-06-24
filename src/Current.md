@@ -2,10 +2,11 @@
 
 * [X] Define scale patterns (Major, Minor, etc.)
 * [X] Generate scale notes from root note
-* [ ] Store current active scale
-* [ ] Validate user input against scale
+* [X] Store current active scale
+* [X] Validate user input against scale
 
-## PROBLEM
-1. For some reason the order in which i initiate the program matters
-   - I have to choose midi first then chose the scale and key\
-if i start from the key, mode and then choose midi and press start it does not work.
+## PROBLEM STATUS
+1. I am not sure if the issue still persists in all scenarios.
+2. The scale generation and play-check flow now works.
+3. The session now stops when the scale is completed.
+4. Still need broader testing for different startup orders and MIDI device switching.
