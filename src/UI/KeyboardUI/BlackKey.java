@@ -7,7 +7,7 @@ public class BlackKey extends JPanel implements Key{
     private int width = 20;
     private int height = 60;
     private Color color = Color.BLACK;
-    private Color borderColor = Color.red;
+    private Color borderColor = Color.black;
     private int borderThickness = 2;
     private boolean valid;
     public BlackKey(){

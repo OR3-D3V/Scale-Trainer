@@ -18,6 +18,7 @@ import java.util.Arrays;
 public class ScaleSession{
     /** Generated target scale as note names (for example: C D E F G A B C). */
     private String[] generatedScaleAsNotes;
+    // Mutable copy used as session progress state. Items are replaced with marker values as notes are consumed.
     private String[] currentInputScaleAsNotes;
 
     /** True when a session is complete and can be shut down. */
@@ -40,23 +41,48 @@ public class ScaleSession{
         generateScale(key, mode);
     }
 
-    // Actual Program, what checks the note and ends session
+    /**
+     * Processes each incoming note against the next expected note in the scale.
+     * <p>
+     * The first unconsumed slot in {@code currentInputScaleAsNotes} is the expected note.
+     * A match is marked as consumed and painted valid; a mismatch is painted invalid.
+     * Once the final slot is consumed, the session is flagged complete.
+     *
+     * <p>Current implementation uses inline sentinel text values ("✅" / "❌") to mark
+     * consumed or invalid states. If you later add a constant like NOTE_DONE_MARKER,
+     * this is the method where it is read and written.</p>
+     *
+     * @param noteNumber incoming MIDI note number
+     */
     public void ongoingSession(int noteNumber){
         for(int i = 0; i < currentInputScaleAsNotes.length; i++){
             String currNote = currentInputScaleAsNotes[i];
+
+            // "✅" acts like a NOTE_DONE_MARKER sentinel: this expected position is already completed.
             if(currNote.equalsIgnoreCase("✅")){
                 continue;
             }
+            // "❌" is currently treated as already-handled state as well.
             else if(currNote.equalsIgnoreCase("❌")){
                 continue;
             }
+            // Send Note If Session is active
             else {
                 if(NoteUtil.getNoteBasedOnNumber(noteNumber).equalsIgnoreCase(currNote)){
                     System.out.println(currNote);
                     sendValidNote(noteNumber);
+                    // Mark this slot as consumed so the next incoming note is validated against the next scale note.
                     currentInputScaleAsNotes[i] = "✅";
+
+                    // Index 7 is the octave slot in the 8-note generated scale (root to octave).
+                    if(i == 7 && currentInputScaleAsNotes[i].equalsIgnoreCase("✅")){
+                        completedSession = true;
+                        System.out.println("Session Complete");
+                    }
                     break;
                 }
+
+                // This should send an invalid note if the not is not in the scale and session is active.
                 else {
                     sendInvalidNote(noteNumber);
                     break;
@@ -86,6 +112,15 @@ public class ScaleSession{
         this.frame = frame;
     }
 
+    /**
+     * Injects the shared MIDI connection so completion cleanup can disconnect input.
+     *
+     * @param midiKeyboardConnection active MIDI connection manager
+     */
+    public void setMidiKeyboardConnection(MidiKeyboardConnection midiKeyboardConnection) {
+        this.midiKeyboardConnection = midiKeyboardConnection;
+    }
+
     // ==================== GETTERS ====================
 
     /** @return current target scale state */
@@ -98,6 +133,7 @@ public class ScaleSession{
         return completedSession;
     }
 
+
     // ==================== SEND METHODS ====================
 
     /**
@@ -106,7 +142,7 @@ public class ScaleSession{
      * @param note MIDI note number (for example 60 for middle C)
      */
     public void sendPressedNote(int note, int velocity){
-        System.out.println("Got here");
+//        System.out.println("Got here");
         ongoingSession(note);
         if(midiChannel != null){
             midiChannel.noteOn(note, velocity);
@@ -217,9 +253,21 @@ public class ScaleSession{
     }
 
 
-    /** Close MIDI resources when a session finishes. */
+    /**
+     * Closes MIDI input resources when the session finishes.
+     * <p>
+     * This method is currently invoked from the MIDI receiver callback path.
+     */
     private void onCompletion(){
-        midiKeyboardConnection.closeTransmitter(); // Close Transmitter
-        currentMidiDevice.close(); // Closes the Midi Device
+        if(midiKeyboardConnection != null){
+            midiKeyboardConnection.disconnect(); // Disconnect transmitter and active input device.
+        }
     }
+
+    /** Public completion hook used by {@link MidiInputReceiver} once session is done. */
+    public void callOnCompletion(){
+        onCompletion();
+    }
+
+
 }
