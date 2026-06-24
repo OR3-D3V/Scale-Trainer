@@ -21,7 +21,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private MidiKeyboardConnection midiKeyboardConnection;
     private ScaleSession currentSession;
     private ControlBarPanel controlBarPanel;
-
+    private CompletionLayer completionLayer;
     /**
      * Builds the UI and injects the MIDI connection object.
      *
@@ -53,8 +53,14 @@ public class MainFrame extends JFrame implements ActionListener {
         keyboardPanel = new KeyboardPanel(this.getHeight());
         add(keyboardPanel, BorderLayout.SOUTH);
         setVisible(true);
+
+        completionLayer = new CompletionLayer();
+        this.add(completionLayer, BorderLayout.EAST);
+
         keyboardPanel.generateWhiteKeyLayout();
         keyboardPanel.generateBlackKeyLayout();
+
+
     }
 
     @Override
