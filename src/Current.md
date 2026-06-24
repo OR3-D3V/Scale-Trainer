@@ -38,3 +38,8 @@ Build a stable session control flow so practice can be repeated cleanly without 
 - Key color reset on Stop is implemented.
 - Completion display is planned for a separate branch (feature/completion-screen).
 - Startup-order issue (key/mode vs MIDI selection order) still needs broader testing.
+## PROBLEM STATUS
+1. I am not sure if the issue still persists in all scenarios.
+2. The scale generation and play-check flow now works.
+3. The session now stops when the scale is completed.
+4. Still need broader testing for different startup orders and MIDI device switching.
