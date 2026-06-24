@@ -130,4 +130,12 @@ public class KeyboardPanel extends JLayeredPane {
         }
     }
 
+    public void resetColorOfKeys(){
+        for(Key curr : keys.values()){
+            curr.setCurrentColor(curr.getDefaultColor());
+            curr.setValid(false);
+        }
+        repaint();
+    }
+
 }

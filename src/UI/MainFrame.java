@@ -79,6 +79,9 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public boolean onStartButtonClicked(){
         if(sessionReady()){
+            if(midiKeyboardConnection.getCurrentActiveDevice() == null){
+                midiKeyboardConnection.reconnect(controlBarPanel.getMidiDeviceName());
+            }
             currentSession.startSession(controlBarPanel.getSelectedKey(), controlBarPanel.getSelectedMode());
             return true;
         }
@@ -87,6 +90,10 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public boolean sessionReady(){
         return (controlBarPanel.getSelectedKey() != null && controlBarPanel.getSelectedMode() != null);
+    }
+
+    public void removeAllHighlightedColors(){
+        keyboardPanel.resetColorOfKeys();
     }
 
 

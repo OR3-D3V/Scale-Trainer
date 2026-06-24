@@ -15,9 +15,9 @@
 
 ### 2. Key Data Mapping
 
-* [X] Assign a MIDI note number to each key
-* [X] Store keys in a structure (e.g., Map<note, KeyPanel>)
-* [X] Create methods:
+* [x] Assign a MIDI note number to each key
+* [x] Store keys in a structure (e.g., Map<note, KeyPanel>)
+* [x] Create methods:
 
     * press()
     * release()
@@ -27,10 +27,10 @@
 
 ### 3. MIDI Integration
 
-* [X] Connect to MIDI input device
-* [X] Listen for MIDI messages (noteOn, noteOff)
-* [X] Map MIDI note → corresponding key
-* [X] Trigger:
+* [x] Connect to MIDI input device
+* [x] Listen for MIDI messages (noteOn, noteOff)
+* [x] Map MIDI note → corresponding key
+* [x] Trigger:
 
     * key.press() on noteOn
     * key.release() on noteOff
@@ -49,12 +49,12 @@
 ### 5. Visual Feedback
 
 * [x] Highlight scale notes on keyboard through press/release feedback
-* [ ] Different colors:
+* [x] Different colors:
 
-    * pressed note (user input)
-    * correct note (in scale)
-    * incorrect note
-* [ ] Clear/reset highlights
+    * pressed note (yellow while held)
+    * correct note (green on release)
+    * incorrect note (red on release)
+* [x] Clear/reset highlights on Stop
 
 ---
 
@@ -63,11 +63,10 @@
 * [x] Dropdown: select root note (C, D, E…)
 * [x] Dropdown: select scale type (Major, Minor…)
 * [x] Dropdown: select MIDI input device
-* [ ] Buttons:
-
-    * [x] Start / Generate scale
-    * Reveal scale
-    * Reset
+* [x] Button: Start / Generate scale
+* [x] Button: Stop (toggles with Start)
+* [ ] Button: Reveal scale
+* [ ] Button: Reset
 
 ---
 
@@ -77,12 +76,15 @@
 * [x] Wait for user to play notes
 * [x] Track progress through the scale
 * [x] Give feedback (correct / incorrect)
-* [ ] Move to next scale
+* [x] Session stops when scale is completed
+* [x] Session resets cleanly on Stop → Start
+* [ ] Move to next scale automatically
 
 ---
 
 ### 8. UX Improvements
 
+* [ ] Show completion feedback screen (planned: feature/completion-screen)
 * [ ] Add labels to keys (optional)
 * [ ] Smooth color transitions (optional)
 * [ ] Add instructions text
@@ -92,20 +94,20 @@
 
 ### 9. Code Structure / Cleanup
 
-* [ ] Separate UI and logic (avoid mixing)
+* [ ] Separate UI and logic further (reduce coupling)
 * [x] Create classes:
 
     * KeyboardPanel
-    * KeyPanel
-    * MIDIHandler
-    * ScaleGenerator
+    * Key interface + WhiteKey / BlackKey
+    * MidiKeyboardConnection
+    * ScaleSession
 * [ ] Avoid hardcoding values (use constants)
 
 ---
 
 ### 10. Testing & Debugging
 
-* [ ] Test MIDI input reliability
+* [ ] Test MIDI input reliability across devices
 * [ ] Test key highlighting accuracy
 * [ ] Test edge cases (fast input, repeated notes)
 * [ ] Ensure no UI freezing (thread handling)
