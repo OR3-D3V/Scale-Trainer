@@ -1,6 +1,7 @@
 import Midi.MidiInputReceiver;
 import Midi.MidiKeyboardConnection;
 import Midi.ScaleSession;
+import Midi.SessionScore;
 import UI.MainFrame;
 
 import javax.sound.midi.MidiUnavailableException;
@@ -34,10 +35,13 @@ public class Main {
         ScaleSession scaleSession = new ScaleSession();
         MidiInputReceiver midiInputReceiver = new MidiInputReceiver(scaleSession);
         MidiKeyboardConnection midiKeyboardConnection = new MidiKeyboardConnection();
+        SessionScore sessionScore = new SessionScore();
         midiKeyboardConnection.setReceiver(midiInputReceiver);
         scaleSession.setMidiKeyboardConnection(midiKeyboardConnection);
-        MainFrame mainFrame = new MainFrame(midiKeyboardConnection, scaleSession);
+
+        MainFrame mainFrame = new MainFrame(midiKeyboardConnection, scaleSession, sessionScore);
         scaleSession.setFrame(mainFrame);
+        scaleSession.setSessionScore(sessionScore);
         scaleSession.initSynth();
     }
 }

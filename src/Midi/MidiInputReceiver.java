@@ -58,7 +58,7 @@ public class MidiInputReceiver implements javax.sound.midi.Receiver {
             // Completion is checked at input time so we can disconnect MIDI immediately
             // and prevent any additional NOTE_ON from being processed for this session.
             if(this.session.getCompletionStatus()){
-                session.callOnCompletion();
+//                session.callOnCompletion();
                 close();
             }
             else{

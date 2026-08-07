@@ -1,6 +1,7 @@
 package UI;
 
 import Midi.ScaleSession;
+import Midi.SessionScore;
 import UI.KeyboardUI.KeyboardPanel;
 import Midi.MidiKeyboardConnection;
 
@@ -22,6 +23,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private ScaleSession currentSession;
     private ControlBarPanel controlBarPanel;
     private CompletionLayer completionLayer;
+    private SessionScore sessionScore;
     /**
      * Builds the UI and injects the MIDI connection object.
      *
@@ -34,8 +36,9 @@ public class MainFrame extends JFrame implements ActionListener {
      * @param midiKeyboardConnection shared MIDI connection manager for device selection
      * @throws MidiUnavailableException if device enumeration fails while building the control bar
      */
-    public MainFrame(MidiKeyboardConnection midiKeyboardConnection, ScaleSession session) throws MidiUnavailableException {
+    public MainFrame(MidiKeyboardConnection midiKeyboardConnection, ScaleSession session, SessionScore sessionScore) throws MidiUnavailableException {
         this.midiKeyboardConnection = midiKeyboardConnection;
+        this.sessionScore = sessionScore;
         currentSession = session;
         this.setTitle("Scale Trainer App");
         // App exits on window close; session-end MIDI cleanup is handled in ScaleSession.
@@ -102,5 +105,8 @@ public class MainFrame extends JFrame implements ActionListener {
         keyboardPanel.resetColorOfKeys();
     }
 
+    public void sendDataToCompletionLayer(){
+        completionLayer.setCompleted(sessionScore.getCorrectNotes(), sessionScore.getAttempts());
+    }
 
 }

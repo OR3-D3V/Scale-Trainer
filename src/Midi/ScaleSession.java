@@ -27,6 +27,8 @@ public class ScaleSession{
     /** Currently active/open MIDI device for this session. */
     private MidiDevice currentMidiDevice;
 
+    private SessionScore sessionScore;
+
     /** MIDI connection helper used to close the transmitter on completion. */
     private MidiKeyboardConnection midiKeyboardConnection;
     private MainFrame frame;
@@ -86,10 +88,13 @@ public class ScaleSession{
                     sendValidNote(noteNumber);
                     // Mark this slot as consumed so the next incoming note is validated against the next scale note.
                     currentInputScaleAsNotes[i] = "✅";
-
+                    sessionScore.incrementCorrectNotes(1);
                     // Index 7 is the octave slot in the 8-note generated scale (root to octave).
                     if(i == 7 && currentInputScaleAsNotes[i].equalsIgnoreCase("✅")){
                         completedSession = true;
+                        callOnCompletion();
+//                        System.out.println(sessionScore.getCorrectNotes());
+//                        System.out.println(sessionScore.getAttempts());
                         System.out.println("Session Complete");
                     }
                     break;
@@ -98,6 +103,7 @@ public class ScaleSession{
                 // This should send an invalid note if the not is not in the scale and session is active.
                 else {
                     sendInvalidNote(noteNumber);
+                    sessionScore.incrementAttempts(1);
                     break;
                 }
             }
@@ -275,6 +281,7 @@ public class ScaleSession{
         if(midiKeyboardConnection != null){
             midiKeyboardConnection.disconnect(); // Disconnect transmitter and active input device.
         }
+        frame.sendDataToCompletionLayer();
     }
 
     /** Public completion hook used by {@link MidiInputReceiver} once session is done. */
@@ -282,5 +289,8 @@ public class ScaleSession{
         onCompletion();
     }
 
+    public void setSessionScore(SessionScore sessionScore){
+        this.sessionScore = sessionScore;
+    }
 
 }
